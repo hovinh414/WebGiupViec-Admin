@@ -350,7 +350,7 @@ export default function CreateServiceModal({ isOpen, onClose, fetchServices }) {
         </ModalBody>
         <ModalFooter>
           <Button
-            colorScheme="blue"
+            colorScheme="brand"
             mr={3}
             onClick={handleSubmit}
             isLoading={loading}

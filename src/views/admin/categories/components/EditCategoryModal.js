@@ -160,7 +160,7 @@ export default function EditCategoryModal({
         <ModalFooter>
           <Button
             isLoading={loading}
-            colorScheme="blue"
+            colorScheme="brand"
             mr={3}
             onClick={handleSubmit}
           >

@@ -166,13 +166,18 @@ export default function ServiceManagement() {
       render: (text, record) => (
         <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
           <Button
+            style={{
+              backgroundColor: "#FF8000",
+              borderColor: "#FF8000",
+              color: "white",
+            }}
             type="primary"
             onClick={(e) => {
               e.stopPropagation();
               handleEditClick(record);
             }}
           >
-            Sửa
+            Chỉnh sửa
           </Button>
           <Popconfirm
             title="Bạn có chắc chắn muốn xóa dịch vụ này không?"
@@ -239,7 +244,7 @@ export default function ServiceManagement() {
             ))}
           </Select>
 
-          <ChakraButton colorScheme="blue" onClick={onCreateOpen}>
+          <ChakraButton colorScheme="brand" onClick={onCreateOpen}>
             Thêm mới
           </ChakraButton>
         </Flex>

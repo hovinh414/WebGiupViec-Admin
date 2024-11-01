@@ -225,6 +225,13 @@ export default function WorkScheduleManagement() {
         onCancel={() => setModalVisible(false)}
         okText="Lưu"
         cancelText="Hủy"
+        okButtonProps={{
+          style: {
+            backgroundColor: "#FF8000",
+            borderColor: "#FF8000",
+            color: "white",
+          },
+        }}
       >
         {days.map((day, index) => (
           <Row

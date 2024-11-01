@@ -217,7 +217,15 @@ export default function BookingManagement() {
               okText="Xác nhận"
               cancelText="Hủy"
             >
-              <Button type="primary" style={{ marginRight: "10px" }}>
+              <Button
+                type="primary"
+                style={{
+                  marginRight: "10px",
+                  backgroundColor: "#FF8000",
+                  borderColor: "#FF8000",
+                  color: "white",
+                }}
+              >
                 Xác nhận
               </Button>
             </Popconfirm>
@@ -225,6 +233,12 @@ export default function BookingManagement() {
           {record.status === "approved" && (
             <Button
               type="primary"
+              style={{
+                marginRight: "10px",
+                backgroundColor: "#FF8000",
+                borderColor: "#FF8000",
+                color: "white",
+              }}
               onClick={() => showCompleteModal(record._id)}
             >
               Hoàn tất

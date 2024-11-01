@@ -117,6 +117,11 @@ export default function Settings() {
       render: (text, record) => (
         <div style={{ display: "flex", justifyContent: "center" }}>
           <Button
+            style={{
+              backgroundColor: "#FF8000",
+              borderColor: "#FF8000",
+              color: "white",
+            }}
             type="primary"
             onClick={(e) => {
               e.stopPropagation();
@@ -125,6 +130,7 @@ export default function Settings() {
           >
             Chỉnh Sửa
           </Button>
+
           <Popconfirm
             title="Bạn có chắc muốn xóa danh mục này không?"
             onConfirm={(e) => {
@@ -176,7 +182,7 @@ export default function Settings() {
             }}
             style={{ width: "85%" }}
           />
-          <ChakraButton colorScheme="blue" onClick={onCreateOpen}>
+          <ChakraButton colorScheme="brand" onClick={onCreateOpen}>
             Thêm Mới
           </ChakraButton>
         </Flex>

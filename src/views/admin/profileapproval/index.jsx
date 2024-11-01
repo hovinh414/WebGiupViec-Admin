@@ -131,6 +131,7 @@ export default function ProfileApprovalManagement() {
                   render: (cv, record) => (
                     <Button
                       type="link"
+                      style={{color: "#FF8000"}}
                       onClick={(e) => {
                         e.stopPropagation(); // Ngăn xung đột sự kiện click của hàng
                         showModal(record); // Truyền record vào để mở Modal với CV và thông tin chi tiết
@@ -154,8 +155,9 @@ export default function ProfileApprovalManagement() {
                         <Button
                           type="primary"
                           style={{
-                            backgroundColor: "green",
-                            borderColor: "green",
+                            backgroundColor: "#FF8000",
+                            borderColor: "#FF8000",
+                            color: "white",
                           }}
                         >
                           Phê Duyệt
@@ -167,7 +169,7 @@ export default function ProfileApprovalManagement() {
                         okText="Có"
                         cancelText="Không"
                       >
-                        <Button type="primary" danger>
+                        <Button type="ghost">
                           Từ Chối
                         </Button>
                       </Popconfirm>

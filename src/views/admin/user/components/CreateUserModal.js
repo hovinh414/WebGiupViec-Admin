@@ -269,7 +269,7 @@ export default function CreateUserModal({ isOpen, onClose, fetchUsers }) {
         </ModalBody>
         <ModalFooter>
           <Button
-            colorScheme="blue"
+            colorScheme="brand"
             mr={3}
             onClick={handleSubmit}
             isLoading={loading}

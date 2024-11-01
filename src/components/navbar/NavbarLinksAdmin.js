@@ -82,13 +82,12 @@ export default function HeaderLinks(props) {
           bg={menuBg}
           border="none"
         >
-          <Flex w="100%" mb="0px">
+          <Flex w="100%" mb="0px" flexDirection="column">
             <Text
               ps="20px"
               pt="16px"
-              pb="10px"
+              pb="2px" // Adjusted for spacing between name and role
               w="100%"
-              borderBottom="1px solid"
               borderColor={borderColor}
               fontSize="sm"
               fontWeight="700"
@@ -96,7 +95,20 @@ export default function HeaderLinks(props) {
             >
               👋&nbsp; Xin chào, {user?.user?.name}
             </Text>
+            <Text
+              ps="20px"
+              pt="0" // No additional padding at the top
+              pb="10px"
+              w="100%"
+              fontSize="sm"
+              fontWeight="500"
+              borderBottom="1px solid"
+              color={textColor}
+            >
+              👷&nbsp; Vai trò: {user?.user?.role || "Không xác định"}
+            </Text>
           </Flex>
+
           <Flex flexDirection="column" p="10px">
             <MenuItem
               _hover={{ bg: "none" }}

@@ -224,7 +224,13 @@ export default function Profile() {
             <Button
               type="primary"
               onClick={handleUpdateProfile}
-              style={{ width: "100%", height: "40px" }}
+              style={{
+                width: "100%",
+                height: "40px",
+                backgroundColor: "#FF8000",
+                borderColor: "#FF8000",
+                color: "white",
+              }}
             >
               {loading ? <Spin indicator={loadingIcon} /> : "Lưu thay đổi"}
             </Button>
@@ -269,7 +275,13 @@ export default function Profile() {
             <Button
               type="primary"
               onClick={handleChangePassword}
-              style={{ width: "100%", height: "40px" }}
+              style={{
+                width: "100%",
+                height: "40px",
+                backgroundColor: "#FF8000",
+                borderColor: "#FF8000",
+                color: "white",
+              }}
             >
               {passwordLoading ? (
                 <Spin indicator={loadingIcon} />

@@ -164,7 +164,9 @@ export default function UserManagement() {
       dataIndex: "discountPercentage",
       key: "discountPercentage",
       render: (discountPercentage) => (
-        <span>{discountPercentage ? `${discountPercentage}%` : "Chưa cập nhật"}</span>
+        <span>
+          {discountPercentage ? `${discountPercentage}%` : "Chưa cập nhật"}
+        </span>
       ), // Hiển thị phần trăm hoặc "Không có" nếu không có
     },
     {
@@ -174,6 +176,11 @@ export default function UserManagement() {
       render: (text, record) => (
         <div style={{ display: "flex", justifyContent: "center" }}>
           <Button
+            style={{
+              backgroundColor: "#FF8000",
+              borderColor: "#FF8000",
+              color: "white",
+            }}
             type="primary"
             onClick={(e) => {
               e.stopPropagation();
@@ -233,7 +240,7 @@ export default function UserManagement() {
             }}
             style={{ width: "85%" }}
           />
-          <ChakraButton colorScheme="blue" onClick={onCreateOpen}>
+          <ChakraButton colorScheme="brand" onClick={onCreateOpen}>
             Thêm Mới
           </ChakraButton>
         </Flex>

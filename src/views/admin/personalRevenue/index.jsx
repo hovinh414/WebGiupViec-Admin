@@ -176,7 +176,7 @@ export default function UserReports() {
             value={dateRange}
             style={{ marginRight: "20px" }}
           />
-          <Button colorScheme="blue" onClick={fetchRevenueStatistics}>
+          <Button colorScheme="brand" onClick={fetchRevenueStatistics}>
             Tính toán
           </Button>
         </Flex>

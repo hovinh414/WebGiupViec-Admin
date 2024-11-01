@@ -122,7 +122,7 @@ export default function WorkSchedule() {
         boxShadow="lg"
       >
         <Center>
-          <Title level={3} style={{ marginBottom: "20px", color: "#1890ff" }}>
+          <Title level={3} style={{ marginBottom: "20px", color: "#FF8000" }}>
             Quản lý Lịch làm việc
           </Title>
         </Center>
@@ -146,7 +146,7 @@ export default function WorkSchedule() {
                   <Text
                     strong
                     style={{
-                      color: "#1890ff",
+                      color: "#FF8000",
                       fontWeight: "600",
                       fontSize: "16px",
                     }}
@@ -165,7 +165,7 @@ export default function WorkSchedule() {
                     style={{
                       textAlign: "center",
                       borderRadius: "8px",
-                      borderColor: "#1890ff",
+                      borderColor: "#FF8000",
                     }}
                   />
                 </Col>
@@ -180,7 +180,7 @@ export default function WorkSchedule() {
                     style={{
                       textAlign: "center",
                       borderRadius: "8px",
-                      borderColor: "#1890ff",
+                      borderColor: "#FF8000",
                     }}
                   />
                 </Col>
@@ -196,7 +196,7 @@ export default function WorkSchedule() {
                   borderRadius: "8px",
                   padding: "0 40px",
                   fontWeight: "bold",
-                  backgroundColor: "#1890ff",
+                  backgroundColor: "#FF8000",
                   color: "white",
                 }}
               >
