@@ -7,11 +7,10 @@ import {
   ModalBody,
   ModalCloseButton,
   Button,
-  Textarea,
-  Select as ChakraSelect,
+  Text,
 } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
-import { Input, message, Upload } from "antd";
+import { Input, message, Upload, Select } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import "react-quill/dist/quill.snow.css";
 import { updateService } from "services/serviceService";
@@ -36,7 +35,8 @@ export default function EditServiceModal({
   });
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
-  console.log(serviceData);
+  const [errors, setErrors] = useState({});
+
   useEffect(() => {
     const fetchCategories = async () => {
       const data = await getAllCategories();
@@ -108,18 +108,30 @@ export default function EditServiceModal({
     setEditService({ ...editService, tasks: updatedTasks });
   };
 
-  const handleSubmit = async () => {
-    setLoading(true);
+  const validateFields = () => {
+    const newErrors = {};
+    if (!editService.serviceName)
+      newErrors.serviceName = "Vui lòng nhập tên dịch vụ.";
+    if (!editService.categoryId)
+      newErrors.categoryId = "Vui lòng chọn danh mục.";
+    if (!editService.shortDescription)
+      newErrors.shortDescription = "Vui lòng nhập mô tả ngắn.";
+    if (!editService.fullDescription)
+      newErrors.fullDescription = "Vui lòng nhập mô tả chi tiết.";
+    if (!editService.basePrice)
+      newErrors.basePrice = "Vui lòng nhập giá cơ bản.";
+    if (!editService.address) newErrors.address = "Vui lòng chọn địa chỉ.";
+    if (!editService.images.length)
+      newErrors.images = "Vui lòng tải lên ít nhất một hình ảnh.";
 
-    if (
-      !editService.serviceName ||
-      !editService.categoryId ||
-      !editService.basePrice
-    ) {
-      message.warning("Vui lòng điền đầy đủ các trường bắt buộc.");
-      setLoading(false);
-      return;
-    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateFields()) return;
+
+    setLoading(true);
 
     const formData = new FormData();
     formData.append("serviceName", editService.serviceName);
@@ -129,11 +141,9 @@ export default function EditServiceModal({
     formData.append("basePrice", editService.basePrice);
     formData.append("address", editService.address);
     editService.images.forEach((file) => {
-      // Kiểm tra nếu là tệp mới, thêm originFileObj
       if (file.originFileObj) {
         formData.append("images", file.originFileObj);
       } else {
-        // Thêm URL nếu không phải tệp mới
         formData.append("images", file.url);
       }
     });
@@ -176,6 +186,11 @@ export default function EditServiceModal({
               }
               style={{ height: "40px" }}
             />
+            {errors.serviceName && (
+              <Text color="red.500" fontSize="sm">
+                {errors.serviceName}
+              </Text>
+            )}
           </div>
 
           {/* Danh mục */}
@@ -185,19 +200,26 @@ export default function EditServiceModal({
             >
               Danh mục:
             </label>
-            <ChakraSelect
+            <Select
               placeholder="Chọn danh mục"
               value={editService.categoryId}
-              onChange={(e) =>
-                setEditService({ ...editService, categoryId: e.target.value })
+              onChange={(value) =>
+                setEditService({ ...editService, categoryId: value })
               }
+              style={{ width: "100%", height: "40px" }}
+              getPopupContainer={(triggerNode) => triggerNode.parentNode}
             >
               {categories.map((category) => (
-                <option key={category._id} value={category._id}>
+                <Select.Option key={category._id} value={category._id}>
                   {category.categoryName}
-                </option>
+                </Select.Option>
               ))}
-            </ChakraSelect>
+            </Select>
+            {errors.categoryId && (
+              <Text color="red.500" fontSize="sm">
+                {errors.categoryId}
+              </Text>
+            )}
           </div>
 
           {/* Mô tả ngắn */}
@@ -218,6 +240,11 @@ export default function EditServiceModal({
               }
               style={{ height: "40px" }}
             />
+            {errors.shortDescription && (
+              <Text color="red.500" fontSize="sm">
+                {errors.shortDescription}
+              </Text>
+            )}
           </div>
 
           {/* Mô tả chi tiết */}
@@ -235,6 +262,11 @@ export default function EditServiceModal({
               }
               style={{ height: "200px" }}
             />
+            {errors.fullDescription && (
+              <Text color="red.500" fontSize="sm">
+                {errors.fullDescription}
+              </Text>
+            )}
           </div>
 
           {/* Giá cơ bản */}
@@ -253,6 +285,11 @@ export default function EditServiceModal({
               }
               style={{ height: "40px" }}
             />
+            {errors.basePrice && (
+              <Text color="red.500" fontSize="sm">
+                {errors.basePrice}
+              </Text>
+            )}
           </div>
 
           {/* Địa chỉ */}
@@ -262,14 +299,26 @@ export default function EditServiceModal({
             >
               Địa chỉ:
             </label>
-            <Input
-              placeholder="Nhập địa chỉ"
+            <Select
+              placeholder="Chọn địa chỉ"
               value={editService.address}
-              onChange={(e) =>
-                setEditService({ ...editService, address: e.target.value })
+              onChange={(value) =>
+                setEditService({ ...editService, address: value })
               }
-              style={{ height: "40px" }}
-            />
+              style={{ width: "100%", height: "40px" }}
+              getPopupContainer={(triggerNode) => triggerNode.parentNode}
+            >
+              <Select.Option value="Hà Nội">Hà Nội</Select.Option>
+              <Select.Option value="Đà Nẵng">Đà Nẵng</Select.Option>
+              <Select.Option value="Thành phố Hồ Chí Minh">
+                Thành phố Hồ Chí Minh
+              </Select.Option>
+            </Select>
+            {errors.address && (
+              <Text color="red.500" fontSize="sm">
+                {errors.address}
+              </Text>
+            )}
           </div>
 
           {/* Hình ảnh */}
@@ -287,6 +336,11 @@ export default function EditServiceModal({
             >
               {editService.images.length < 5 && <PlusOutlined />}
             </Upload>
+            {errors.images && (
+              <Text color="red.500" fontSize="sm">
+                {errors.images}
+              </Text>
+            )}
           </div>
 
           {/* Tasks */}
@@ -323,7 +377,7 @@ export default function EditServiceModal({
                     onChange={(e) =>
                       handleTaskChange(index, "title", e.target.value)
                     }
-                    style={{ width: "80%" }}
+                    style={{ width: "80%", height: "40px" }}
                   />
                   <Button
                     type="text"
@@ -345,7 +399,7 @@ export default function EditServiceModal({
                       onChange={(e) =>
                         handleTaskItemChange(index, itemIndex, e.target.value)
                       }
-                      style={{ width: "85%" }}
+                      style={{ width: "85%", height: "40px" }}
                     />
                     <Button
                       type="text"

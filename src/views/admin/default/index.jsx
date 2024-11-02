@@ -283,22 +283,19 @@ export default function UserReports() {
         <ResponsiveContainer width="100%" height={300}>
           <LineChart
             data={statisticsTime?.revenue || []}
-            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+            margin={{ top: 10, right: 20, left: 40, bottom: 0 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="_id" />
-            <YAxis
-              tickFormatter={(value) => formatCurrency(value)} // Định dạng số thành tiền Việt Nam cho trục Y
-            />
+            <YAxis />
             <Tooltip
-              formatter={(value) => formatCurrency(value)} // Định dạng tiền Việt Nam cho Tooltip
-              labelFormatter={(label) =>
-                `Ngày: ${dayjs(label).format("DD/MM/YYYY")}`
-              }
+              labelFormatter={(label) => `Ngày: ${label}`}
+              formatter={(value) => `${formatCurrency(value, "VND")}`}
             />
             <Line
               type="monotone"
               dataKey="totalRevenue"
+              name="Doanh thu"
               stroke="#8884d8"
               activeDot={{ r: 8 }}
             />

@@ -67,15 +67,29 @@ export default function WorkSchedule() {
       if (day.startTime && day.endTime) {
         const start = moment(day.startTime, "HH:mm");
         const end = moment(day.endTime, "HH:mm");
+
+        // Check if start and end times are within the allowed range
+        const minTime = moment("08:00", "HH:mm");
+        const maxTime = moment("19:00", "HH:mm");
+
+        if (
+          start.isBefore(minTime) ||
+          start.isAfter(maxTime) ||
+          end.isBefore(minTime) ||
+          end.isAfter(maxTime)
+        ) {
+          message.error(
+            "Giờ làm việc phải nằm trong khoảng từ 08:00 đến 19:00."
+          );
+          return false;
+        }
+
         return start.isBefore(end);
       }
       return true;
     });
 
     if (!isValid) {
-      message.error(
-        "Giờ bắt đầu phải nhỏ hơn giờ kết thúc cho tất cả các ngày."
-      );
       return;
     }
 

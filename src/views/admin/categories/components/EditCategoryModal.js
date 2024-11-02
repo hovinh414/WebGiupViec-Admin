@@ -30,6 +30,13 @@ export default function EditCategoryModal({
   const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
   const [loading, setLoading] = useState(false);
 
+  // Error state for each input field
+  const [errors, setErrors] = useState({
+    categoryName: "",
+    description: "",
+    image: "",
+  });
+
   useEffect(() => {
     if (category) {
       setEditCategory({
@@ -38,6 +45,7 @@ export default function EditCategoryModal({
         image: null,
       });
       setPreviewImage(category.images || "https://via.placeholder.com/150");
+      setErrors({ categoryName: "", description: "", image: "" }); // Clear errors when new category is loaded
     }
   }, [category]);
 
@@ -45,24 +53,34 @@ export default function EditCategoryModal({
     const file = e.target.files[0];
     if (file) {
       if (file.size > MAX_IMAGE_SIZE) {
-        message.warning("Vui lòng chọn hình ảnh nhỏ hơn 5MB.");
+        setErrors({ ...errors, image: "Vui lòng chọn hình ảnh nhỏ hơn 5MB." });
       } else {
         setEditCategory({ ...editCategory, image: file });
         setPreviewImage(URL.createObjectURL(file));
+        setErrors({ ...errors, image: "" }); // Clear image error if valid
       }
     }
   };
 
   const handleSubmit = async () => {
+    const newErrors = { categoryName: "", description: "", image: "" };
+    let isValid = true;
+
     if (!editCategory.categoryName) {
-      message.warning("Vui lòng nhập tên danh mục.");
-      return;
+      newErrors.categoryName = "Vui lòng nhập tên danh mục.";
+      isValid = false;
     }
+
     if (!editCategory.description) {
-      message.warning("Vui lòng nhập mô tả.");
-      return;
+      newErrors.description = "Vui lòng nhập mô tả.";
+      isValid = false;
     }
+
+    setErrors(newErrors);
+    if (!isValid) return;
+
     setLoading(true);
+
     const formData = new FormData();
     formData.append("categoryName", editCategory.categoryName);
     formData.append("description", editCategory.description);
@@ -72,15 +90,12 @@ export default function EditCategoryModal({
 
     try {
       await updateCategory(category._id, formData);
-
       message.success("Cập nhật danh mục thành công");
-
       fetchCategories();
-
       onClose();
     } catch (error) {
       message.error(
-        error.response.data.message || "Cập nhật danh mục thất bại"
+        error.response?.data?.message || "Cập nhật danh mục thất bại"
       );
     } finally {
       setLoading(false);
@@ -111,6 +126,11 @@ export default function EditCategoryModal({
               }
               style={{ height: "40px" }}
             />
+            {errors.categoryName && (
+              <Text color="red.500" fontSize="sm">
+                {errors.categoryName}
+              </Text>
+            )}
           </div>
 
           <div style={{ marginBottom: 16 }}>
@@ -131,6 +151,11 @@ export default function EditCategoryModal({
               }
               rows={4}
             />
+            {errors.description && (
+              <Text color="red.500" fontSize="sm">
+                {errors.description}
+              </Text>
+            )}
           </div>
 
           <div style={{ marginBottom: 16 }}>
@@ -155,6 +180,11 @@ export default function EditCategoryModal({
               Tải lên hình ảnh mới:
             </label>
             <Input type="file" accept="image/*" onChange={handleFileChange} />
+            {errors.image && (
+              <Text color="red.500" fontSize="sm">
+                {errors.image}
+              </Text>
+            )}
           </div>
         </ModalBody>
         <ModalFooter>

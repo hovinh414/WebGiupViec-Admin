@@ -8,12 +8,11 @@ import {
 } from "@chakra-ui/react";
 import { Table, message, Tag, Modal, Input, Row, Col } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import moment from "moment"; // Import moment here
+import moment from "moment";
 import {
   getAllWorkSchedule,
   getWorkScheduleByUserId,
   updateWorkSchedule,
-  createWorkSchedule,
 } from "services/workScheduleService";
 import Card from "components/card/Card";
 
@@ -47,7 +46,6 @@ export default function WorkScheduleManagement() {
       setSchedules(data);
     } catch (error) {
       message.error("Không thể tải danh sách lịch làm việc.");
-      console.error("Error fetching work schedules:", error);
     } finally {
       setLoading(false);
     }
@@ -65,7 +63,7 @@ export default function WorkScheduleManagement() {
 
       setDays(completeDays);
     } catch (error) {
-      console.error("Error fetching user schedule:", error);
+      message.error("Không thể tải lịch làm việc của nhân viên.");
     }
   };
 
@@ -73,7 +71,6 @@ export default function WorkScheduleManagement() {
     const daySchedule = days.find((d) => d.day === dayOfWeek);
 
     if (!daySchedule) {
-      // Khi không có `daySchedule`, hiển thị nút thêm lịch
       return (
         <ChakraButton
           leftIcon={<PlusOutlined />}
@@ -85,14 +82,12 @@ export default function WorkScheduleManagement() {
         </ChakraButton>
       );
     } else if (!daySchedule.startTime || !daySchedule.endTime) {
-      // Khi `daySchedule` tồn tại nhưng không có `startTime` hoặc `endTime`
       return (
         <Tag color="default" style={{ fontSize: "14px", padding: "5px 10px" }}>
           Chưa có lịch làm
         </Tag>
       );
     } else {
-      // Khi có đầy đủ `startTime` và `endTime`, hiển thị thời gian làm việc
       return (
         <Tag color={color} style={{ fontSize: "14px", padding: "5px 10px" }}>
           {daySchedule.startTime} - {daySchedule.endTime}
@@ -160,14 +155,30 @@ export default function WorkScheduleManagement() {
       if (day.startTime && day.endTime) {
         const start = moment(day.startTime, "HH:mm");
         const end = moment(day.endTime, "HH:mm");
-        return start.isBefore(end);
+
+        // Kiểm tra giờ bắt đầu và kết thúc trong khoảng từ 08:00 đến 19:00
+        const isInTimeRange =
+          start.isBetween(
+            moment("08:00", "HH:mm"),
+            moment("19:00", "HH:mm"),
+            null,
+            "[]"
+          ) &&
+          end.isBetween(
+            moment("08:00", "HH:mm"),
+            moment("19:00", "HH:mm"),
+            null,
+            "[]"
+          );
+
+        return start.isBefore(end) && isInTimeRange;
       }
       return true;
     });
 
     if (!isValid) {
       message.error(
-        "Giờ bắt đầu phải nhỏ hơn giờ kết thúc cho tất cả các ngày."
+        "Giờ bắt đầu phải nhỏ hơn giờ kết thúc và trong khoảng 08:00-19:00."
       );
       return;
     }
@@ -176,8 +187,8 @@ export default function WorkScheduleManagement() {
     try {
       await updateWorkSchedule(selectedUser._id, { days });
       message.success("Cập nhật lịch làm việc thành công");
-      fetchWorkSchedules(); // Refresh the list after update or create
-      setModalVisible(false); // Close modal after success
+      fetchWorkSchedules();
+      setModalVisible(false);
     } catch (error) {
       message.error("Không thể lưu lịch làm việc");
     } finally {
@@ -206,15 +217,18 @@ export default function WorkScheduleManagement() {
             <CircularProgress isIndeterminate color="blue.300" />
           </Flex>
         ) : (
-          <Table
-            columns={columns}
-            dataSource={schedules}
-            rowKey={(record) => record._id}
-            onRow={(record) => ({
-              onClick: () => handleRowClick(record),
-            })}
-            pagination={{ pageSize: 5 }}
-          />
+          <Box overflowX="auto">
+            <Table
+              columns={columns}
+              dataSource={schedules}
+              rowKey={(record) => record._id}
+              onRow={(record) => ({
+                onClick: () => handleRowClick(record),
+              })}
+              pagination={{ pageSize: 5 }}
+              style={{ minWidth: "800px" }}
+            />
+          </Box>
         )}
       </Card>
 

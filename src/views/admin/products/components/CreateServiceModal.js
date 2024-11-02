@@ -7,16 +7,17 @@ import {
   ModalBody,
   ModalCloseButton,
   Button,
-  Textarea,
-  Select as ChakraSelect,
+  Text,
 } from "@chakra-ui/react";
 import React, { useState, useEffect } from "react";
-import { Input, message, Upload } from "antd";
+import { Input, Select, Upload, message } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import "react-quill/dist/quill.snow.css";
 import { createService } from "services/serviceService";
 import { getAllCategories } from "services/categoryService";
 import ReactQuill from "react-quill";
+
+const { TextArea } = Input;
 
 export default function CreateServiceModal({ isOpen, onClose, fetchServices }) {
   const [newService, setNewService] = useState({
@@ -32,6 +33,16 @@ export default function CreateServiceModal({ isOpen, onClose, fetchServices }) {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const [errors, setErrors] = useState({
+    serviceName: "",
+    categoryId: "",
+    shortDescription: "",
+    fullDescription: "",
+    basePrice: "",
+    address: "",
+    images: "",
+  });
+
   useEffect(() => {
     const fetchCategories = async () => {
       const data = await getAllCategories();
@@ -43,9 +54,10 @@ export default function CreateServiceModal({ isOpen, onClose, fetchServices }) {
   const handleFileChange = ({ fileList }) => {
     const updatedFileList = fileList.map((file) => ({
       ...file,
-      originFileObj: file.originFileObj || file, // Giữ lại originFileObj cho file mới
+      originFileObj: file.originFileObj || file,
     }));
     setNewService({ ...newService, images: updatedFileList });
+    setErrors({ ...errors, images: "" });
   };
 
   const handleAddTask = () => {
@@ -91,18 +103,56 @@ export default function CreateServiceModal({ isOpen, onClose, fetchServices }) {
     setNewService({ ...newService, tasks: updatedTasks });
   };
 
-  const handleSubmit = async () => {
-    setLoading(true);
+  const validateFields = () => {
+    const newErrors = {
+      serviceName: "",
+      categoryId: "",
+      shortDescription: "",
+      fullDescription: "",
+      basePrice: "",
+      address: "",
+      images: "",
+    };
 
-    if (
-      !newService.serviceName ||
-      !newService.categoryId ||
-      !newService.basePrice
-    ) {
-      message.warning("Vui lòng điền đầy đủ các trường bắt buộc.");
-      setLoading(false);
-      return;
+    let isValid = true;
+
+    if (!newService.serviceName) {
+      newErrors.serviceName = "Vui lòng nhập tên dịch vụ.";
+      isValid = false;
     }
+    if (!newService.categoryId) {
+      newErrors.categoryId = "Vui lòng chọn danh mục.";
+      isValid = false;
+    }
+    if (!newService.shortDescription) {
+      newErrors.shortDescription = "Vui lòng nhập mô tả ngắn.";
+      isValid = false;
+    }
+    if (!newService.fullDescription) {
+      newErrors.fullDescription = "Vui lòng nhập mô tả chi tiết.";
+      isValid = false;
+    }
+    if (!newService.basePrice) {
+      newErrors.basePrice = "Vui lòng nhập giá cơ bản.";
+      isValid = false;
+    }
+    if (!newService.address) {
+      newErrors.address = "Vui lòng chọn địa chỉ.";
+      isValid = false;
+    }
+    if (!newService.images.length) {
+      newErrors.images = "Vui lòng tải lên ít nhất một hình ảnh.";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateFields()) return;
+
+    setLoading(true);
 
     const formData = new FormData();
     formData.append("serviceName", newService.serviceName);
@@ -114,7 +164,7 @@ export default function CreateServiceModal({ isOpen, onClose, fetchServices }) {
 
     newService.images.forEach((file) => {
       if (file.originFileObj) {
-        formData.append("images", file.originFileObj); // Sử dụng originFileObj
+        formData.append("images", file.originFileObj);
       }
     });
 
@@ -165,6 +215,11 @@ export default function CreateServiceModal({ isOpen, onClose, fetchServices }) {
               }
               style={{ height: "40px" }}
             />
+            {errors.serviceName && (
+              <Text color="red.500" fontSize="sm">
+                {errors.serviceName}
+              </Text>
+            )}
           </div>
 
           <div style={{ marginBottom: 16 }}>
@@ -173,18 +228,25 @@ export default function CreateServiceModal({ isOpen, onClose, fetchServices }) {
             >
               Danh mục:
             </label>
-            <ChakraSelect
+            <Select
               placeholder="Chọn danh mục"
-              onChange={(e) =>
-                setNewService({ ...newService, categoryId: e.target.value })
+              onChange={(value) =>
+                setNewService({ ...newService, categoryId: value })
               }
+              style={{ width: "100%", height: "40px" }}
+              getPopupContainer={(triggerNode) => triggerNode.parentNode}
             >
               {categories.map((category) => (
-                <option key={category._id} value={category._id}>
+                <Select.Option key={category._id} value={category._id}>
                   {category.categoryName}
-                </option>
+                </Select.Option>
               ))}
-            </ChakraSelect>
+            </Select>
+            {errors.categoryId && (
+              <Text color="red.500" fontSize="sm">
+                {errors.categoryId}
+              </Text>
+            )}
           </div>
 
           <div style={{ marginBottom: 16 }}>
@@ -193,7 +255,7 @@ export default function CreateServiceModal({ isOpen, onClose, fetchServices }) {
             >
               Mô tả ngắn:
             </label>
-            <Input
+            <TextArea
               placeholder="Nhập mô tả ngắn"
               value={newService.shortDescription}
               onChange={(e) =>
@@ -204,6 +266,11 @@ export default function CreateServiceModal({ isOpen, onClose, fetchServices }) {
               }
               style={{ height: "40px" }}
             />
+            {errors.shortDescription && (
+              <Text color="red.500" fontSize="sm">
+                {errors.shortDescription}
+              </Text>
+            )}
           </div>
 
           <div style={{ marginBottom: 16 }}>
@@ -220,13 +287,18 @@ export default function CreateServiceModal({ isOpen, onClose, fetchServices }) {
               }
               style={{ height: "200px" }}
             />
+            {errors.fullDescription && (
+              <Text color="red.500" fontSize="sm">
+                {errors.fullDescription}
+              </Text>
+            )}
           </div>
 
           <div style={{ marginBottom: 16, marginTop: 50 }}>
             <label
               style={{ fontWeight: "bold", display: "block", marginBottom: 8 }}
             >
-              Giá cơ bản:
+              Giá dự tính:
             </label>
             <Input
               type="number"
@@ -237,6 +309,11 @@ export default function CreateServiceModal({ isOpen, onClose, fetchServices }) {
               }
               style={{ height: "40px" }}
             />
+            {errors.basePrice && (
+              <Text color="red.500" fontSize="sm">
+                {errors.basePrice}
+              </Text>
+            )}
           </div>
 
           <div style={{ marginBottom: 16 }}>
@@ -245,14 +322,26 @@ export default function CreateServiceModal({ isOpen, onClose, fetchServices }) {
             >
               Địa chỉ:
             </label>
-            <Input
-              placeholder="Nhập địa chỉ"
+            <Select
+              placeholder="Chọn địa chỉ"
               value={newService.address}
-              onChange={(e) =>
-                setNewService({ ...newService, address: e.target.value })
+              onChange={(value) =>
+                setNewService({ ...newService, address: value })
               }
-              style={{ height: "40px" }}
-            />
+              style={{ width: "100%", height: "40px" }}
+              getPopupContainer={(triggerNode) => triggerNode.parentNode}
+            >
+              <Select.Option value="Hà Nội">Hà Nội</Select.Option>
+              <Select.Option value="Đà Nẵng">Đà Nẵng</Select.Option>
+              <Select.Option value="Thành phố Hồ Chí Minh">
+                Thành phố Hồ Chí Minh
+              </Select.Option>
+            </Select>
+            {errors.address && (
+              <Text color="red.500" fontSize="sm">
+                {errors.address}
+              </Text>
+            )}
           </div>
 
           <div style={{ marginBottom: 16 }}>
@@ -269,9 +358,14 @@ export default function CreateServiceModal({ isOpen, onClose, fetchServices }) {
             >
               {newService.images.length < 5 && <PlusOutlined />}
             </Upload>
+            {errors.images && (
+              <Text color="red.500" fontSize="sm">
+                {errors.images}
+              </Text>
+            )}
           </div>
 
-          <div>
+          <div style={{ marginBottom: 16 }}>
             <label
               style={{ fontWeight: "bold", display: "block", marginBottom: 8 }}
             >
@@ -304,7 +398,7 @@ export default function CreateServiceModal({ isOpen, onClose, fetchServices }) {
                     onChange={(e) =>
                       handleTaskChange(index, "title", e.target.value)
                     }
-                    style={{ width: "80%" }}
+                    style={{ width: "80%", height: "40px" }}
                   />
                   <Button
                     type="text"
@@ -326,7 +420,7 @@ export default function CreateServiceModal({ isOpen, onClose, fetchServices }) {
                       onChange={(e) =>
                         handleTaskItemChange(index, itemIndex, e.target.value)
                       }
-                      style={{ width: "85%" }}
+                      style={{ width: "85%", height: "40px" }}
                     />
                     <Button
                       type="text"

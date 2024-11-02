@@ -203,7 +203,7 @@ export default function ServiceManagement() {
         direction="column"
         w="100%"
         px="25px"
-        overflowX={{ sm: "scroll", lg: "hidden" }}
+        overflowX="hidden" // Đảm bảo Card không bị cuộn ngoài ý muốn
       >
         <Flex justify="space-between" mb="15px" align="center">
           <Text
@@ -255,13 +255,16 @@ export default function ServiceManagement() {
           </Flex>
         ) : (
           <>
-            <Table
-              columns={columns}
-              dataSource={services}
-              pagination={false}
-              rowKey={(record) => record._id}
-              style={{ width: "100%", cursor: "pointer" }}
-            />
+            {/* Sử dụng Box để bao quanh bảng và tạo thanh cuộn */}
+            <Box overflowX="auto" maxWidth="100%">
+              <Table
+                columns={columns}
+                dataSource={services}
+                pagination={false}
+                rowKey={(record) => record._id}
+                style={{ width: "100%", cursor: "pointer" }}
+              />
+            </Box>
 
             <Pagination
               current={currentPage}

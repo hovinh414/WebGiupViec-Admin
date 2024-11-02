@@ -217,7 +217,7 @@ export default function UserManagement() {
         direction="column"
         w="100%"
         px="25px"
-        overflowX={{ sm: "scroll", lg: "hidden" }}
+        overflowX="hidden" // Ẩn overflow từ Card chính
       >
         <Flex justify="space-between" mb="15px" align="center">
           <Text
@@ -251,13 +251,16 @@ export default function UserManagement() {
           </Flex>
         ) : (
           <>
-            <Table
-              columns={columns}
-              dataSource={users}
-              pagination={false}
-              rowKey={(record) => record._id}
-              style={{ width: "100%", cursor: "pointer" }}
-            />
+            {/* Sử dụng Box để tạo thanh cuộn cho bảng */}
+            <Box overflowX="auto" maxWidth="100%">
+              <Table
+                columns={columns}
+                dataSource={users}
+                pagination={false}
+                rowKey={(record) => record._id}
+                style={{ width: "100%", cursor: "pointer" }}
+              />
+            </Box>
             <Pagination
               current={currentPage}
               total={totalPages * limit}

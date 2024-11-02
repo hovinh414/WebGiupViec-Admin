@@ -8,6 +8,7 @@ import {
   ModalCloseButton,
   Button,
   Image,
+  Text,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { Input, message } from "antd";
@@ -27,6 +28,13 @@ export default function CreateCategoryModal({
 
   const [loading, setLoading] = useState(false);
 
+  // Error states for each input field
+  const [errors, setErrors] = useState({
+    categoryName: "",
+    description: "",
+    image: "",
+  });
+
   const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
   const PLACEHOLDER_IMAGE = "https://via.placeholder.com/150";
 
@@ -35,7 +43,7 @@ export default function CreateCategoryModal({
 
     if (file) {
       if (file.size > MAX_IMAGE_SIZE) {
-        message.warning("Vui lòng chọn hình ảnh nhỏ hơn 5MB.");
+        setErrors({ ...errors, image: "Vui lòng chọn hình ảnh nhỏ hơn 5MB." });
         return;
       }
 
@@ -44,29 +52,34 @@ export default function CreateCategoryModal({
         image: file,
         imagePreview: URL.createObjectURL(file),
       });
+      setErrors({ ...errors, image: "" }); // Clear image error if valid
     }
   };
 
   const handleSubmit = async () => {
-    setLoading(true);
+    let valid = true;
+    const newErrors = { categoryName: "", description: "", image: "" };
 
     if (!newCategory.categoryName) {
-      message.warning("Vui lòng nhập tên danh mục.");
-      setLoading(false);
-      return;
+      newErrors.categoryName = "Vui lòng nhập tên danh mục.";
+      valid = false;
     }
 
     if (!newCategory.description) {
-      message.warning("Vui lòng nhập mô tả.");
-      setLoading(false);
-      return;
+      newErrors.description = "Vui lòng nhập mô tả.";
+      valid = false;
     }
 
     if (!newCategory.image) {
-      message.warning("Vui lòng tải lên hình ảnh.");
-      setLoading(false);
-      return;
+      newErrors.image = "Vui lòng tải lên hình ảnh.";
+      valid = false;
     }
+
+    setErrors(newErrors);
+
+    if (!valid) return;
+
+    setLoading(true);
 
     const formData = new FormData();
     formData.append("categoryName", newCategory.categoryName);
@@ -115,6 +128,11 @@ export default function CreateCategoryModal({
               }
               style={{ height: "40px" }}
             />
+            {errors.categoryName && (
+              <Text color="red.500" fontSize="sm">
+                {errors.categoryName}
+              </Text>
+            )}
           </div>
 
           <div style={{ marginBottom: 16 }}>
@@ -135,6 +153,11 @@ export default function CreateCategoryModal({
               }
               rows={4}
             />
+            {errors.description && (
+              <Text color="red.500" fontSize="sm">
+                {errors.description}
+              </Text>
+            )}
           </div>
 
           <div style={{ marginBottom: 16 }}>
@@ -160,6 +183,11 @@ export default function CreateCategoryModal({
               Tải lên Hình ảnh Danh mục:
             </label>
             <Input type="file" accept="image/*" onChange={handleFileChange} />
+            {errors.image && (
+              <Text color="red.500" fontSize="sm">
+                {errors.image}
+              </Text>
+            )}
           </div>
         </ModalBody>
         <ModalFooter>
