@@ -15,7 +15,7 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import DefaultAuth from "layouts/auth/Default";
-import illustration from "assets/img/auth/auth.png";
+
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { RiEyeCloseLine } from "react-icons/ri";
 import { signIn } from "services/authService";
@@ -27,7 +27,7 @@ function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
-
+  const illustration = "https://www.btaskee.com/wp-content/uploads/2020/08/khac-biet-btasker-va-giup-viec-truyen-thong.png";
   const handleClick = () => setShow(!show);
 
   const handleSignIn = async (e) => {
